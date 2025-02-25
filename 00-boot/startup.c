@@ -11,22 +11,26 @@ void DefaultHandler(void) {
 
 extern int main(void);
 void ResetHandler(void) {
+  extern char __bss_start, __bss_end;
+  for (char* addr = &__bss_start; addr < (&__bss_end); ++addr)
+    *addr = 0;  // we must clear the bss section
+
   main();
+
   while (1)
-    ;
+    ;  // not expected to be here
 }
 
 /* we need to specify the section of the vector table to .vectors (check
  * the linker script)
  *
  * Check the CM33 dgug 2.3.4 for the layout of vector table */
-extern uint32_t __StackTop;
-
-__attribute__((section(".vectors"))) uint32_t __vector_table__[16] = {
-    0x28200000,              // FIXME: init SP
-    (uint32_t)ResetHandler,  // Reset Handler
+typedef void (*isr_t)(void);
+__attribute__((section(".vectors"))) isr_t __vector_table__[16] = {
+    (isr_t)0x28400000,  // the top addr of the sram, check the MEMORY config
+    ResetHandler,       // Reset Handler
     0,
-    (uint32_t)DefaultHandler,  // Hard Fault
+    DefaultHandler,  // Hard Fault
     0,
     0,
     0,
@@ -45,6 +49,6 @@ void SystemInit() {
   /*
    * Update the SCB->VTOR (0xE000ED08) to our vector table
    */
-  uint32_t* SCB_VTOR = (uint32_t*)0xE000ED08;
-  *SCB_VTOR = (uint32_t)&__vector_table__;
+  isr_t** SCB_VTOR = (isr_t**)0xE000ED08;
+  *SCB_VTOR = __vector_table__;
 }

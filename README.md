@@ -28,3 +28,5 @@ $ make gdb DIR=TARGET_DIR
 - <https://embeddedsecurity.io/sec-c>
 - <https://github.com/Introduction-To-System-On-Chip/QEMU_an505>
 - <https://github.com/jserv/mini-arm-os>
+- <https://sourceware.org/binutils/docs/ld/>
+- <https://allthingsembedded.com/post/2020-04-11-mastering-the-gnu-linker-script/>

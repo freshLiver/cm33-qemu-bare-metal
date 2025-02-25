@@ -2,7 +2,7 @@ DIR 	?= PATH_TO_TARGET_DIR
 ELF 	= main.elf
 
 build:
-	$(MAKE) -C $(DIR) $(ELF)
+	$(MAKE) -BC $(DIR) $(ELF)
 
 run: build
 	qemu-system-arm -M mps2-an505 -nographic -kernel $(DIR)/$(ELF)

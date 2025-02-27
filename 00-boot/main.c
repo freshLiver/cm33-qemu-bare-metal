@@ -9,16 +9,18 @@ static inline void assert(bool expr) {
     __vector_table__[3]();
 }
 
-static int g_value_0;
-static int g_value_10 = 10;
-static const int g_const_value_100 = 100;
+static int bss_data;
+static int data_val_10 = 10;
+static const int rodata_val_100 = 100;
 
 int main(void) {
   SystemInit();
 
-  assert(g_value_0 == 0);
-  assert(g_value_10 == 10);
-  assert(g_const_value_100 == 100);
+  assert(bss_data == 0);
+  assert((bss_data = 123) == 123);
+  assert(data_val_10 == 10);
+  assert((data_val_10 = 12345) == 12345);
+  assert(rodata_val_100 == 100);
 
   while (1)
     ;

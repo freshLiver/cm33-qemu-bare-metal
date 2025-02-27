@@ -11,9 +11,15 @@ void DefaultHandler(void) {
 
 extern int main(void);
 void ResetHandler(void) {
-  extern char __bss_start, __bss_end;
-  for (char* addr = &__bss_start; addr < (&__bss_end); ++addr)
-    *addr = 0;  // we must clear the bss section
+  // copy .data from ROM to RAM
+  extern uint8_t _data, _edata, _data_rom;
+  for (uint8_t *src = &_data_rom, *dst = &_data; dst < &_edata; ++src, ++dst)
+    *dst = *src;
+
+  // clear .bss section
+  extern char _bstart, _bend;
+  for (char* p = &_bstart; p < (&_bend); ++p)
+    *p = 0;  // we must clear the bss section
 
   main();
 

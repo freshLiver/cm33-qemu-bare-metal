@@ -17,23 +17,39 @@ MEMORY
 SECTIONS
 {
     /* the ROM (flash) consists of vector tables, codes, and initialized data */
-    .text (ORIGIN(ROM)) :
+    .isr_vector :
     {
-        /* make sure the vector table begins at init_svtor */
         *(.vectors) /* be careful with --gc-sections */
+    } > ROM /* make sure the vector table begins at init_svtor */
+
+    .text :
+    {
         *(.text) /* be careful with -ffunction-sections */
-        *(.data) /* be careful with -fdata-sections */
+    } > ROM
+
+    .rodata :
+    {
         *(.rodata)
-    }
+    } > ROM
+
+    .data :
+    {
+        _data = .; /* put this symbol at this addr */
+        *(.data) /* be careful with -fdata-sections */
+        _edata = .; /* put this symbol at this addr */
+    } > ROM AT> ROM /* .data should be modifiable during runtime */
+    _data_rom = LOADADDR(.data); /* get LMA of this region */
+
 
     /* the uninit data, and zero-init data (.bss) should be place to RAM */
-    .bss (ORIGIN(RAM)) :
+    .bss :
     {
+        _bstart = .;
         *(.bss)
-    }
-
-    /* defined for reset handler to reset .bss section */
-    __bss_start = ADDR(.bss);
-    __bss_size = SIZEOF(.bss);
-    __bss_end = ADDR(.bss) + __bss_size;
+        *(COMMON)
+        _bend = .;
+    } > RAM AT> RAM
+    /* it's crucial to specify the LMA when you want to change LMA region if you
+     * didn't give a VALID VMA ADDR to this region. check the doc for details:
+     * https://sourceware.org/binutils/docs/ld/Output-Section-LMA.html */
 }

@@ -1,0 +1,4 @@
+-Wall
+-Iinc
+-nostdlib
+-nostdinc

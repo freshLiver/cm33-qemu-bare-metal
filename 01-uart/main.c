@@ -1,6 +1,8 @@
 #include "stdbool.h"
 #include "stdint.h"
 
+#include "compiler_tricks.h"
+
 extern void SystemInit(void);
 
 static inline void assert(bool expr) {
@@ -8,8 +10,6 @@ static inline void assert(bool expr) {
   if (!expr)
     __vector_table__[3]();
 }
-
-// FIXME: add static asserts
 
 /* The offsets of uart regs are defined in qemu/hw/char/cmsdk-apb-uart.{c,h}
  * Also check the official docs for the detailed usage and meaning of each reg:
@@ -58,6 +58,12 @@ typedef struct CMSDK_UART_REGS {
 
   uint32_t bauddiv;
 } uart_t;
+
+static_assert(offset_of(data_reg, uart_t) == 0x00);
+static_assert(offset_of(state_reg, uart_t) == 0x04);
+static_assert(offset_of(ctrl_reg, uart_t) == 0x08);
+static_assert(offset_of(int_state_reg, uart_t) == 0x0C);
+static_assert(offset_of(bauddiv, uart_t) == 0x10);
 
 #define UART0_REG_BASE 0x40200000  // -serial mon:stdio
 #define UART1_REG_BASE 0x40201000  // -serial pty

@@ -59,8 +59,11 @@ typedef struct CMSDK_UART_REGS {
   uint32_t bauddiv;
 } uart_t;
 
-#define UART0_REG_BASE 0x50200000
-volatile uart_t* uart = (void*)UART0_REG_BASE;
+#define UART0_REG_BASE 0x40200000  // -serial mon:stdio
+#define UART1_REG_BASE 0x40201000  // -serial pty
+
+volatile uart_t* uart0 = (void*)UART0_REG_BASE;
+volatile uart_t* uart1 = (void*)UART1_REG_BASE;
 
 static inline void initUART() {
   /* The doc said:
@@ -69,14 +72,37 @@ static inline void initUART() {
    * > is 9600, program the baud rate divider register as 12,000,000/9600 =
    * > 1250.
    */
-  uart->ctrl_reg = uart->state_reg = uart->ctrl_reg = uart->int_state_reg = 0;
-  uart->ctrl.TX_EN = 1;
+  uart0->ctrl_reg = uart0->state_reg = uart0->int_state_reg = 0;
+  uart0->ctrl.TX_EN = 1;
+
+  uart1->ctrl_reg = uart1->state_reg = uart1->int_state_reg = 0;
+  uart1->ctrl.RX_EN = 1;
+}
+
+static inline void uart_putc(char c) {
+  while (uart0->state.TXFULL)
+    ;
+  uart0->data = c;
 }
 
 static inline void print(const char* msg) {
-  volatile uint8_t* uart_data = &uart->data;
   while (*msg) {
-    *uart_data = *msg++;
+    uart_putc(*msg++);
+  }
+}
+
+static inline char uart_getc() {
+  while (!uart1->state.RXFULL)
+    ;
+  return uart1->data;
+}
+
+static inline void getline(char* msg, int len) {
+  for (int i = 0; i < len; ++i, ++msg) {
+    *msg = uart_getc();
+    *msg &= -!(*msg == '\n');
+    if (!*msg)
+      break;
   }
 }
 
@@ -94,7 +120,16 @@ int main(void) {
   assert(rodata_val_100 == 100);
 
   initUART();
-  print("hello !!!!!");
+
+  print("start echoing messages from serial 1...\n");
+  char buf[101];
+  while (1) {
+    buf[100] = 0;
+
+    getline(buf, 100);
+    print(buf);
+  }
+
   while (1)
     ;
 

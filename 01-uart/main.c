@@ -52,8 +52,8 @@ typedef struct CMSDK_UART_REGS {
       uint8_t RX;
       uint8_t TXO;
       uint8_t RXO;
-    } int_state;
-    uint32_t int_state_reg;
+    } intstat;
+    uint32_t intstat_reg;
   };
 
   uint32_t bauddiv;
@@ -62,7 +62,7 @@ typedef struct CMSDK_UART_REGS {
 static_assert(offset_of(data_reg, uart_t) == 0x00);
 static_assert(offset_of(state_reg, uart_t) == 0x04);
 static_assert(offset_of(ctrl_reg, uart_t) == 0x08);
-static_assert(offset_of(int_state_reg, uart_t) == 0x0C);
+static_assert(offset_of(intstat_reg, uart_t) == 0x0C);
 static_assert(offset_of(bauddiv, uart_t) == 0x10);
 
 #define UART0_REG_BASE 0x40200000  // -serial mon:stdio
@@ -78,10 +78,10 @@ static inline void initUART() {
    * > is 9600, program the baud rate divider register as 12,000,000/9600 =
    * > 1250.
    */
-  uart0->ctrl_reg = uart0->state_reg = uart0->int_state_reg = 0;
+  uart0->ctrl_reg = uart0->state_reg = uart0->intstat_reg = 0;
   uart0->ctrl.TX_EN = 1;
 
-  uart1->ctrl_reg = uart1->state_reg = uart1->int_state_reg = 0;
+  uart1->ctrl_reg = uart1->state_reg = uart1->intstat_reg = 0;
   uart1->ctrl.RX_EN = 1;
 }
 

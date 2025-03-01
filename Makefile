@@ -22,6 +22,11 @@ format-apply: DIR = .
 format-apply:
 	find $(DIR) -type f -regextype egrep -regex ".*\.(c|h)" -exec clang-format -i -style=file {} \;
 
+PTY=
+BAUD=115200
+connect-pty:
+	socat - /dev/pts/$(PTY),b$(BAUD),raw,echo=0
+
 clean: DIR = .
 clean:
 	find $(DIR) -type f -regextype egrep -regex ".*\.(o|elf|map)" -exec $(RM) -vr {} \;

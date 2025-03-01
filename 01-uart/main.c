@@ -77,6 +77,18 @@ static inline void initUART() {
    * > For example, if the PCLK is running at 12MHz, and the required baud rate
    * > is 9600, program the baud rate divider register as 12,000,000/9600 =
    * > 1250.
+   *
+   * And, according to the source code, the PCLK is 20MHz:
+   * > ```c
+   * > qdev_prop_set_uint32(DEVICE(uart), "pclk-frq", mmc->apb_periph_frq);
+   * > ...
+   * > ...
+   * > mmc->sysclk_frq = 20 * 1000 * 1000;
+   * > mmc->apb_periph_frq = mmc->sysclk_frq;
+   * > ```
+   * so, the bauddiv should be set to 20,000,000/BAUD_RATE
+   *
+   * However, the bauddiv seems doesn't affect the I/O, so keep default here...
    */
   uart0->ctrl_reg = uart0->state_reg = uart0->intstat_reg = 0;
   uart0->ctrl.TX_EN = 1;

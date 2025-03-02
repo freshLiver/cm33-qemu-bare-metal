@@ -64,7 +64,7 @@ static_assert(offset_of(bauddiv, uart_t) == 0x10);
 volatile uart_t* uart0 = (void*)UART0_REG_BASE;
 volatile uart_t* uart1 = (void*)UART1_REG_BASE;
 
-static inline void initUART() {
+static inline void UartInit() {
   /* The doc said:
    * > You must program the baud rate divider register before enabling the UART.
    * > For example, if the PCLK is running at 12MHz, and the required baud rate
@@ -90,27 +90,27 @@ static inline void initUART() {
   uart1->ctrl.RX_EN = 1;
 }
 
-static inline void uart_putc(char c) {
+static inline void UartPutc(char c) {
   while (uart0->state.TXFULL)
     ;
   uart0->data = c;
 }
 
-static inline void print(const char* msg) {
+static inline void UartPrint(const char* msg) {
   while (*msg) {
-    uart_putc(*msg++);
+    UartPutc(*msg++);
   }
 }
 
-static inline char uart_getc() {
+static inline char UartGetc() {
   while (!uart1->state.RXFULL)
     ;
   return uart1->data;
 }
 
-static inline void getline(char* msg, int len) {
+static inline void UartGetline(char* msg, int len) {
   for (int i = 0; i < len; ++i, ++msg) {
-    *msg = uart_getc();
+    *msg = UartGetc();
     *msg &= -!(*msg == '\n');
     if (!*msg)
       break;
@@ -121,15 +121,15 @@ int main(void) {
   SystemInit();
   TEST_DATA();
 
-  initUART();
+  UartInit();
 
-  print("start echoing messages from serial 1...\n");
+  UartPrint("start echoing messages from serial 1...\n");
   char buf[101];
   while (1) {
     buf[100] = 0;
 
-    getline(buf, 100);
-    print(buf);
+    UartGetline(buf, 100);
+    UartPrint(buf);
   }
 
   while (1)

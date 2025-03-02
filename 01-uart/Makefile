@@ -5,7 +5,7 @@ CFLAGS = -g3 -O0 -Wall -mcpu=cortex-m33 -mthumb -nostartfiles --specs=nosys.spec
 
 LDFLAGS = -Map=output.map --script=lscript.ld
 
-main.elf: startup.o main.o
+main.elf: startup.o tests.o main.o
 	$(CROSS_COMPILE)$(LD) $(LDFLAGS) -o $@ $^
 
 %.o: %.c

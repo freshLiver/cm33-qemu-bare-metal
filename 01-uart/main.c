@@ -2,6 +2,7 @@
 #include "stdint.h"
 
 extern void SystemInit(void);
+extern void TEST_DATA();
 
 /* The offsets of uart regs are defined in qemu/hw/char/cmsdk-apb-uart.{c,h}
  * Also check the official docs for the detailed usage and meaning of each reg:
@@ -116,18 +117,9 @@ static inline void getline(char* msg, int len) {
   }
 }
 
-static int bss_data;
-static int data_val_10 = 10;
-static const int rodata_val_100 = 100;
-
 int main(void) {
   SystemInit();
-
-  assert(bss_data == 0);
-  assert((bss_data = 123) == 123);
-  assert(data_val_10 == 10);
-  assert((data_val_10 = 12345) == 12345);
-  assert(rodata_val_100 == 100);
+  TEST_DATA();
 
   initUART();
 

@@ -5,7 +5,10 @@ CFLAGS = -g3 -O0 -Wall -mcpu=cortex-m33 -mthumb -nostartfiles --specs=nosys.spec
 
 LDFLAGS = -Map=output.map --script=lscript.ld
 
-main.elf: startup.o tests.o main.o
+UTIL_OBJS   = ../utils/uart.o
+OBJS        = startup.o tests.o main.o $(UTIL_OBJS)
+
+main.elf: $(OBJS)
 	$(CROSS_COMPILE)$(LD) $(LDFLAGS) -o $@ $^
 
 %.o: %.c

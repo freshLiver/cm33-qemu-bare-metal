@@ -1,15 +1,7 @@
-#include "stdbool.h"
+#include "assert.h"
 #include "stdint.h"
 
-#include "compiler_tricks.h"
-
 extern void SystemInit(void);
-
-static inline void assert(bool expr) {
-  extern void (*__vector_table__[16])(void);
-  if (!expr)
-    __vector_table__[3]();
-}
 
 /* The offsets of uart regs are defined in qemu/hw/char/cmsdk-apb-uart.{c,h}
  * Also check the official docs for the detailed usage and meaning of each reg:

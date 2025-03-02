@@ -9,8 +9,6 @@
 #define _cat(a, b) a##b
 #define cat(a, b) _cat(a, b)
 
-char cat(test, test);
-
 #define offset_of(mem, st) (uintptr_t) & ((st*)0)->mem
 
 #define static_assert(expr)                                                 \

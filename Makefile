@@ -9,7 +9,7 @@ run: build
 	qemu-system-arm -M mps2-an505 $(STDIO_CONFIG) -kernel $(DIR)/$(ELF)
 
 debug: build
-	qemu-system-arm -M mps2-an505 $(STDIO_CONFIG) -kernel $(DIR)/$(ELF) -S -gdb tcp::1234
+	qemu-system-arm -M mps2-an505 $(STDIO_CONFIG) -kernel $(DIR)/$(ELF) -d int -S -gdb tcp::1234
 
 gdb: build
 	gdb-multiarch -ex "set architecture arm" -ex "dir $(DIR)" -q $(DIR)/$(ELF) -ex "target remote tcp::1234"

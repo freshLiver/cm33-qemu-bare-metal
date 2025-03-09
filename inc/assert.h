@@ -2,13 +2,13 @@
 #define __MY_ASSERT_H__
 
 #include "compiler_tricks.h"
-#include "stdbool.h"
 
-static inline void assert(bool expr) {
-  if (!expr)
-    while (1)
-      ;
-}
+#define assert(expr) \
+  ({                 \
+    if (!(expr))     \
+      while (1)      \
+        ;            \
+  })
 
 #define static_assert(expr)                                                 \
   struct cat(static_assert_, __LINE__) {                                    \
